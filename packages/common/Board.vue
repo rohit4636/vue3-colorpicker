@@ -2,6 +2,7 @@
   <div
     :class="['vc-saturation', { 'vc-saturation__chrome': round, 'vc-saturation__hidden': hide }]"
     :style="{ backgroundColor: state.hueColor }"
+    @click="handleDrag($event, true)"
     @mousedown="onMouseDown"
     @mouseup="onMouseUp"
     @mousemove="handleDrag"
@@ -76,8 +77,8 @@
         dragStart.value = false;
       };
 
-      const handleDrag = (event: MouseEvent) => {
-        if (instance && dragStart.value) {
+      const handleDrag = (event: MouseEvent, forced = false) => {
+        if (instance && (dragStart.value || forced)) {
           const el = instance.vnode.el;
 
           const rect = el?.getBoundingClientRect();
