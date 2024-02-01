@@ -1,6 +1,6 @@
 {
-  "name": "@comet-rocks/vue3-colorpicker",
-  "version": "2.2.3",
+  "name": "@eldrago891/vue3-colorpicker",
+  "version": "1.0.0",
   "main": "dist/index.es.js",
   "types": "dist/types/index.d.ts",
   "author": "aesoper",
