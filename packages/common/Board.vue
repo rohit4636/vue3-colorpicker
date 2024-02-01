@@ -1,9 +1,10 @@
 <template>
   <div
-    ref="boardElement"
     :class="['vc-saturation', { 'vc-saturation__chrome': round, 'vc-saturation__hidden': hide }]"
     :style="{ backgroundColor: state.hueColor }"
-    @click="onClickBoard"
+    @mousedown="onMouseDown"
+    @mouseup="onMouseUp"
+    @mousemove="handleDrag"
   >
     <div class="vc-saturation__white"></div>
     <div class="vc-saturation__black"></div>
@@ -49,7 +50,8 @@
       const cursorLeft = ref(0);
 
       const cursorElement = ref<HTMLElement | null>();
-      const boardElement = ref<HTMLElement | null>();
+
+      const dragStart = ref(false);
 
       const getCursorStyle = computed(() => {
         return {
@@ -59,24 +61,25 @@
       });
 
       const updatePosition = () => {
-        if (instance) {
+        if (instance && dragStart.value) {
           const el = instance.vnode.el;
           cursorLeft.value = state.saturation * el?.clientWidth;
           cursorTop.value = (1 - state.brightness) * el?.clientHeight;
         }
       };
 
-      const onClickBoard = (event: Event) => {
-        const target = event.target;
+      const onMouseDown = () => {
+        dragStart.value = true;
+      };
 
-        if (target !== boardElement.value) {
-          handleDrag(event as MouseEvent);
-        }
+      const onMouseUp = () => {
+        dragStart.value = false;
       };
 
       const handleDrag = (event: MouseEvent) => {
-        if (instance) {
+        if (instance && dragStart.value) {
           const el = instance.vnode.el;
+
           const rect = el?.getBoundingClientRect();
 
           let left = event.clientX - rect.left;
@@ -128,7 +131,22 @@
         { deep: true }
       );
 
-      return { state, cursorElement, getCursorStyle, onClickBoard };
+      return {
+        state,
+        cursorElement,
+        getCursorStyle,
+        onMouseDown,
+        handleDrag,
+        onMouseUp,
+      };
+    },
+    mounted() {
+      document.addEventListener("mousemove", this.handleDrag);
+      document.addEventListener("mouseup", this.onMouseUp);
+    },
+    beforeUnmount() {
+      document.removeEventListener("mousemove", this.handleDrag);
+      document.removeEventListener("mouseup", this.onMouseUp);
     },
   });
 </script>
